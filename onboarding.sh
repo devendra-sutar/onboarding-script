@@ -373,7 +373,7 @@ EOF
 }
 
 install_values_template() {
-    local BASE_URL="http://10.0.2.21"
+    local BASE_URL="https://github.com/devendra-sutar/onboarding-script/blob/master"
     local FILE_NAME="values-template.yaml"
     if [ -f "$FILE_NAME" ]; then
         :
