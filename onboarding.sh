@@ -580,7 +580,7 @@ get_api_server_url_step() {
 }
 
 cleanup_temp_files() {
-    rm -f config.alloy values.yaml webhook_payload.json /tmp/new-kubeconfig.yaml
+    rm -f config.alloy  webhook_payload.json /tmp/new-kubeconfig.yaml
 }
 
 show_credentials() {
