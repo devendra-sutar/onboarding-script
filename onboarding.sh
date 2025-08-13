@@ -536,7 +536,7 @@ deploy_trivy() {
     helm repo update >/dev/null 2>&1
     if [[ "$DRY_RUN" == "true" ]]; then return; fi
     kubectl create namespace kubesage-security --dry-run=client -o yaml | kubectl apply -f -
-    helm --kubeconfig="$KUBECONFIG" upgrade --install trivy-operator aquasecurity/trivy-operator -n kubesage-security -f https://github.com/devendra-sutar/onboarding-script/master/trivy-values.yaml > /dev/null 2>&1 || true
+    helm --kubeconfig="$KUBECONFIG" upgrade --install trivy-operator aquasecurity/trivy-operator  -n kubesage-security -f https://raw.githubusercontent.com/devendra-sutar/onboarding-script/master/trivy-values.yaml > /dev/null 2>&1 || true
     kubectl rollout status deployment/trivy-operator -n kubesage-security --timeout=120s > /dev/null 2>&1 || true
 }
 
