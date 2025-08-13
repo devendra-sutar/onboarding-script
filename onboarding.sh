@@ -373,50 +373,15 @@ EOF
 }
 
 install_values_template() {
-    local BASE_URL="https://raw.githubusercontent.com/devendra-sutar/onboarding-script/master"
-    local FILE_NAME="values-template.yaml"
-    local TEMP_FILE="values-template.temp"
+    local URL="https://raw.githubusercontent.com/devendra-sutar/onboarding-script/master/values-template.yaml"
+    local FILE="values-template.yaml"
 
-    # Check if the file already exists locally
-    if [ -f "$FILE_NAME" ]; then
-        echo "File $FILE_NAME already exists locally. Skipping download."
-        return 0
-    fi
-
-    # Check if the file is accessible at the URL
-    if curl --output /dev/null --silent --head --fail "$BASE_URL/$FILE_NAME"; then
-        # Download the file to a temporary location
-        echo "Downloading $FILE_NAME from $BASE_URL..."
-        if curl -L -o "$TEMP_FILE" "$BASE_URL/$FILE_NAME"; then
-            # Validate the file content (basic check for YAML vs HTML/CSS)
-            if file "$TEMP_FILE" | grep -q "HTML\|CSS"; then
-                echo "Error: Downloaded file appears to contain HTML/CSS instead of YAML."
-                rm -f "$TEMP_FILE"
-                exit 1
-            fi
-
-            # Check if the file is valid YAML (requires `yq` or similar YAML parser)
-            if command -v yq >/dev/null 2>&1; then
-                if ! yq eval '.' "$TEMP_FILE" >/dev/null 2>&1; then
-                    echo "Error: Downloaded file is not valid YAML."
-                    rm -f "$TEMP_FILE"
-                    exit 1
-                fi
-            else
-                echo "Warning: 'yq' not installed. Skipping YAML validation."
-            fi
-
-            # Move the temp file to the final destination
-            mv "$TEMP_FILE" "$FILE_NAME"
-            echo "Successfully downloaded $FILE_NAME."
-        else
-            echo "Error: Failed to download $FILE_NAME."
-            rm -f "$TEMP_FILE"
-            exit 1
-        fi
+    if [[ -f "$FILE" ]]; then
+        # Download only if remote version is newer
+        curl -z "$FILE" -L -o "$FILE" "$URL"
     else
-        echo "Error: Cannot access $BASE_URL/$FILE_NAME."
-        exit 1
+        # Download if file doesn't exist
+        curl -L -o "$FILE" "$URL"
     fi
 }
 
