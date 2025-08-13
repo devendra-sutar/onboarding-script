@@ -1,0 +1,45 @@
+config:
+  logLevel: error
+  logFormat: json
+  route:
+    routes:
+      - match:
+        - receiver: "dump"
+        - receiver: "alerts"
+        drop:
+        - namespace: "event-exporter"
+        - type: "Normal"
+  receivers:
+    - name: "alerts"
+      webhook:
+        endpoint: "${WEBHOOK_ENDPOINT}"
+        headers:
+          User-Agent: "${WEBHOOK_USER_AGENT}"
+          User-Name: "${WEBHOOK_USER_NAME}"
+          Cluster-Name: "${CLUSTER_NAME}"
+    - name: "dump"
+      opensearch:
+        hosts:
+          - "${OS_HOST}"
+        index: "kube-events"
+        indexFormat: "kube-events"
+        username: "${OS_USERNAME}"
+        password: "${OS_PASSWORD}"
+        useEventID: true
+        deDot: true
+        tls:
+          insecureSkipVerify: true
+        layout:
+          eventType: "kubernetes-event"
+          createdAt: "{{ .GetTimestampMs }}"
+          details:
+            message: "{{ .Message }}"
+            reason: "{{ .Reason }}"
+            type: "{{ .Type }}"
+            count: "{{ .Count }}"
+            kind: "{{ .InvolvedObject.Kind }}"
+            name: "{{ .InvolvedObject.Name }}"
+            namespace: "{{ .Namespace }}"
+            component: "{{ .Source.Component }}"
+            host: "{{ .Source.Host }}"
+            labels: "{{ toJson .InvolvedObject.Labels}}"
