@@ -373,17 +373,20 @@ EOF
 }
 
 install_values_template() {
-    local BASE_URL="https://github.com/devendra-sutar/onboarding-script/master"
+    local BASE_URL="https://raw.githubusercontent.com/devendra-sutar/onboarding-script/master"
     local FILE_NAME="values-template.yaml"
+
     if [ -f "$FILE_NAME" ]; then
+        # File already exists locally
         :
     elif curl --output /dev/null --silent --head --fail "$BASE_URL/$FILE_NAME"; then
-        curl -O "$BASE_URL/$FILE_NAME"
+        curl -L -O "$BASE_URL/$FILE_NAME"
     else
-        log_error "$BASE_URL/$FILE_NAME not accessible"
+        log_error "$BASE_URL/$FILE_NAME not accessible or not found"
         exit 1
     fi
 }
+
 
 render_values() {
     log_info "Rendering values..."
